@@ -1,30 +1,45 @@
 import React, { useState } from 'react';
-import conditions from './components/Conditions/Conditions';
+import Conditions from '../Conditions/Conditions';
 import classes from './Forecast.module.css';
 
 const Forecast = () => {
     let [city, setCity] = useState('');
-    let [unit, setUnit] = useState('imperial');
+    let [unit, setUnit] = useState('metric');
     let [responseObj, setResponseObj] = useState({});
-    const uriEncodedCity = encodeURIComponent(city)
-   function getForecast() {
-    fetch(`https://community-open-weather-map.p.rapidapi.com/weather?q=seattle&lat=0&lon=0&callback=test&id=2172797&lang=null&units=%22metric%22%20or%20%22imperial%22&mode=xml%2C%20html`, {
-        "method": "GET",
-        "headers": {
-            "x-rapidapi-key": "bd63ea38a1msh9ee293126e03f6cp192d21jsn78d498056c51",
-            "x-rapidapi-host": "community-open-weather-map.p.rapidapi.com"
+    let [error, setError] = useState(false);
+    let [loading, setLoading] = useState(false);
+
+    function getForecast(e) {
+        e.preventDefault();
+        if (city.length === 0) {
+            return setError(true);
         }
-    })
-    .then(response => response.json()) /*imp*/
-    .then(response => {
-        setResponseObj(response)
-    })
-    .catch(err => {
-        console.error(err);
-    });
-}
-function getForecast(e) {
-    e.preventDefault();
+    }    
+    setError(false);
+    setResponseObj({});
+    setLoading(true);
+    let uriEncodedCity = encodeURIComponent(city);
+   function getForecast() {
+    fetch("https://community-open-weather-map.p.rapidapi.com/weather?q=Seattle&lat=0&lon=0&callback=test&id=2172797&lang=null&units=%22metric%22%20or%20%22imperial%22&mode=xml%2C%20html", {
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-key": "bd63ea38a1msh9ee293126e03f6cp192d21jsn78d498056c51",
+		"x-rapidapi-host": "community-open-weather-map.p.rapidapi.com"
+	}
+})
+.then(response => response.json())
+.then(response => {
+    if (response.cod !== 200) {
+        throw new Error()
+    }
+    setResponseObj(response);
+    setLoading(false);
+})
+.catch(err => {
+    setError(true);
+    setLoading(false);
+    console.log(err.message);
+});
 }
    return (
     <div>
@@ -65,13 +80,15 @@ function getForecast(e) {
             <button type="submit">Get Forecast</button>
             </form>
 
-            <div>
-           <Conditions /*imp*/
+    
+    <Conditions
                responseObj={responseObj}
+               error={error} 
+              loading={loading}
                />
-            </div>
     </div>
-   )
+)
 
 }
 export default Forecast;
+

@@ -14,12 +14,12 @@ const Forecast = () => {
         if (city.length === 0) {
             return setError(true);
         }
-    }    
+        
     setError(false);
     setResponseObj({});
     setLoading(true);
-    let uriEncodedCity = encodeURIComponent(city);
-   function getForecast() {
+    /*let uriEncodedCity = encodeURIComponent(city);*/
+
     fetch("https://community-open-weather-map.p.rapidapi.com/weather?q=Seattle&lat=0&lon=0&callback=test&id=2172797&lang=null&units=%22metric%22%20or%20%22imperial%22&mode=xml%2C%20html", {
 	"method": "GET",
 	"headers": {
@@ -40,7 +40,9 @@ const Forecast = () => {
     setLoading(false);
     console.log(err.message);
 });
-}
+    }
+
+
    return (
     <div>
     <h2>Find Current Weather Conditions</h2>
@@ -88,7 +90,8 @@ const Forecast = () => {
                />
     </div>
 )
-
 }
-export default Forecast;
+   
 
+
+export default Forecast;
